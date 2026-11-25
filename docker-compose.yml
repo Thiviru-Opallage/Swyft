@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: swyft
+      POSTGRES_PASSWORD: swyft_dev
+      POSTGRES_DB: swyft
+    ports:
+      - "5432:5432"
+    volumes:
+      - swyft_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U swyft -d swyft"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  swyft_postgres:

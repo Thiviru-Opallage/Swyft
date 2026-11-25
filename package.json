@@ -1,0 +1,12 @@
+{
+  "name": "swyft",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev:mobile": "npm run start -w @swyft/mobile",
+    "dev:api": "npm run dev -w @swyft/api",
+    "dev:admin": "npm run dev -w @swyft/admin",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  }
+}
