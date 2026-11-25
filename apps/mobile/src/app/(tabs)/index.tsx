@@ -24,7 +24,7 @@ export default function Explore() {
       <View className="mb-8 flex-row items-center justify-between"><Text className="text-sm text-[#C9DAD2]">Your next appointment starts here</Text><Icon name="arrow-forward" color="#C9DAD2" size={18} /></View>
       <Text className="max-w-[270px] text-[27px] leading-8 text-white" style={{ fontFamily: 'Georgia' }}>Good days begin with a little space.</Text>
       <View className="mt-8 flex-row items-center"><View className="h-2 w-2 rounded-full bg-[#94D4B4]" /><View className="mx-2 h-px flex-1 bg-[#7B968B]" /><View className="h-2 w-2 rounded-full bg-[#7B968B]" /><View className="mx-2 h-px flex-1 bg-[#7B968B]" /><View className="h-2 w-2 rounded-full bg-[#7B968B]" /></View>
-      <View className="mt-2 flex-row justify-between"><Text className="text-xs text-[#C9DAD2]">Choose</Text><Text className="text-xs text-[#C9DAD2]">Pick a time</Text><Text className="text-xs text-[#C9DAD2]">You're set</Text></View>
+      <View className="mt-2 flex-row justify-between"><Text className="text-xs text-[#C9DAD2]">Choose</Text><Text className="text-xs text-[#C9DAD2]">Pick a time</Text><Text className="text-xs text-[#C9DAD2]">You&apos;re set</Text></View>
     </View>
     <View className="mb-4 flex-row items-end justify-between"><Text className="text-[25px] text-ink" style={{ fontFamily: 'Georgia' }}>Services</Text><Text className="text-sm text-muted">{services.length} available</Text></View>
     {loading ? <ActivityIndicator color={palette.accent} className="mt-8" /> : null}

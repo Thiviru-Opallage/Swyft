@@ -169,13 +169,14 @@ app.post('/bookings/:id/reschedule', requireAuth, async (req: AuthedRequest, res
   res.json(mapBooking(changed));
 });
 
+const deviceSchema = z.object({ pushToken: z.string().regex(/^(Exponent|Expo)PushToken\[[^\]]+\]$/) });
 app.post('/devices', requireAuth, async (req: AuthedRequest, res) => {
-  const parsed = z.object({ pushToken: z.string().startsWith('ExponentPushToken[') }).parse(req.body);
+  const parsed = deviceSchema.parse(req.body);
   await prisma.device.upsert({ where: { pushToken: parsed.pushToken }, update: { userId: req.auth!.id }, create: { userId: req.auth!.id, pushToken: parsed.pushToken } });
   res.status(204).end();
 });
 app.delete('/devices', requireAuth, async (req: AuthedRequest, res) => {
-  const parsed = z.object({ pushToken: z.string().startsWith('ExponentPushToken[') }).parse(req.body);
+  const parsed = deviceSchema.parse(req.body);
   await prisma.device.deleteMany({ where: { userId: req.auth!.id, pushToken: parsed.pushToken } });
   res.status(204).end();
 });
@@ -211,7 +212,7 @@ async function sendDueReminders() {
     const tokens = reminder.booking.user.devices.map(device => device.pushToken);
     if (!tokens.length) { await prisma.reminder.update({ where: { id: reminder.id }, data: { sentAt: new Date() } }); continue; }
     try {
-      const response = await fetch('https://exp.host/--/api/v2/push/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(tokens.map(to => ({ to, title: 'Your Swyft appointment', body: `${reminder.booking.service.name} is ${reminder.offsetMin === 1440 ? 'tomorrow' : 'in one hour'}.`, data: { bookingId: reminder.booking.id } }))) });
+      const response = await fetch('https://exp.host/--/api/v2/push/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(tokens.map(to => ({ to, sound: 'default', channelId: 'appointments', title: 'Your Swyft appointment', body: `${reminder.booking.service.name} is ${reminder.offsetMin === 1440 ? 'tomorrow' : 'in one hour'}.`, data: { bookingId: reminder.booking.id } }))) });
       if (!response.ok) throw new Error(`Push service returned ${response.status}`);
       await prisma.reminder.update({ where: { id: reminder.id }, data: { sentAt: new Date(), attempts: { increment: 1 } } });
     } catch (error) {

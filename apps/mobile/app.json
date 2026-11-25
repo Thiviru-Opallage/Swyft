@@ -7,8 +7,11 @@
     "icon": "./assets/brand/icon.png",
     "scheme": "swyft",
     "userInterfaceStyle": "light",
-    "ios": {},
+    "ios": {
+      "bundleIdentifier": "com.thiviru.swyft"
+    },
     "android": {
+      "package": "com.thiviru.swyft",
       "adaptiveIcon": {
         "backgroundColor": "#172A2A",
         "foregroundImage": "./assets/brand/adaptive-foreground.png",

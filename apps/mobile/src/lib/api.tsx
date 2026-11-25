@@ -7,6 +7,9 @@ import Constants from 'expo-constants';
 const baseUrl = process.env.EXPO_PUBLIC_API_URL || (Platform.OS === 'android' ? 'http://10.0.2.2:4000' : 'http://localhost:4000');
 const key = 'swyft-refresh-token';
 const pushKey = 'swyft-push-token';
+if (Platform.OS !== 'web') Notifications.setNotificationHandler({
+  handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: true, shouldSetBadge: false }),
+});
 export type User = { id: string; name: string; email: string; role: 'CUSTOMER' | 'OWNER' };
 export type Service = { id: string; name: string; description: string; durationMinutes: number; priceCents: number; currency: string };
 export type Staff = { id: string; name: string };
@@ -85,6 +88,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     if (Platform.OS === 'web') return;
     const projectId = Constants.easConfig?.projectId || Constants.expoConfig?.extra?.eas?.projectId;
     if (!projectId) return;
+    if (Platform.OS === 'android') await Notifications.setNotificationChannelAsync('appointments', { name: 'Appointments', importance: Notifications.AndroidImportance.HIGH });
     const permission = await Notifications.requestPermissionsAsync();
     if (permission.status !== 'granted') return;
     const pushToken = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
