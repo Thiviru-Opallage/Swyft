@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  OWNER
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(CUSTOMER)
+  bookings     Booking[]
+  sessions     Session[]
+  devices      Device[]
+  createdAt    DateTime  @default(now())
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Device {
+  id        String   @id @default(cuid())
+  userId    String
+  pushToken String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Service {
+  id              String    @id @default(cuid())
+  name            String
+  description     String
+  durationMinutes Int
+  priceCents      Int
+  currency        String    @default("LKR")
+  active          Boolean   @default(true)
+  sortOrder       Int       @default(0)
+  bookings        Booking[]
+  createdAt       DateTime  @default(now())
+}
+
+model Staff {
+  id       String    @id @default(cuid())
+  name     String
+  active   Boolean   @default(true)
+  bookings Booking[]
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  userId      String
+  serviceId   String
+  staffId     String
+  startsAt    DateTime
+  endsAt      DateTime
+  status      BookingStatus @default(CONFIRMED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  user        User          @relation(fields: [userId], references: [id])
+  service     Service       @relation(fields: [serviceId], references: [id])
+  staff       Staff         @relation(fields: [staffId], references: [id])
+  reminders   Reminder[]
+
+  @@index([staffId, startsAt])
+  @@index([userId, startsAt])
+}
+
+model Reminder {
+  id        String    @id @default(cuid())
+  bookingId String
+  offsetMin Int
+  dueAt     DateTime
+  sentAt    DateTime?
+  attempts  Int       @default(0)
+  booking   Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@unique([bookingId, offsetMin])
+  @@index([dueAt, sentAt])
+}
