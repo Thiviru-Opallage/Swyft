@@ -1,6 +1,6 @@
 # Swyft
 
-Swyft is an appointment booking app. This repository contains the Expo SDK 57 customer app, an Express API, a PostgreSQL database model, and a small owner dashboard. The included salon catalog is illustrative; service data is editable in the database.
+Swyft is an appointment booking app. This repository contains the Expo SDK 58 customer app, an Express API, a PostgreSQL database model, and a small owner dashboard. The included salon catalog is illustrative; service data is editable in the database.
 
 ## What works
 
