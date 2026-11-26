@@ -61,7 +61,8 @@ async function upsertReminders(tx: any, bookingId: string, startsAt: Date) {
 }
 async function assertBookable(tx: any, staffId: string, startsAt: Date, endsAt: Date, excludeId?: string) {
   // Resource-level transaction lock serializes competing bookings, including reschedules.
-  await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${staffId}))`;
+  // Select an integer so Prisma does not try to deserialize PostgreSQL's void lock result.
+  await tx.$queryRaw`SELECT 1::integer AS acquired FROM pg_advisory_xact_lock(hashtext(${staffId}))`;
   const conflict = await tx.booking.findFirst({ where: { staffId, status: BookingStatus.CONFIRMED, startsAt: { lt: endsAt }, endsAt: { gt: startsAt }, ...(excludeId ? { id: { not: excludeId } } : {}) } });
   if (conflict) throw Object.assign(new Error('That time is no longer available'), { status: 409 });
 }
